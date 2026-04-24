@@ -9,7 +9,7 @@
 
 ---
 
-## 🧮 프로젝트 소개
+## 프로젝트 소개
 
 **ARITHMOS™**는 "생성형 AI + 프리미엄 SaaS" 문법을 극한까지 밀어붙인 **풍자형 웹 애플리케이션**입니다.
 
@@ -19,7 +19,7 @@
 
 모든 카피는 100% 진지한 럭셔리 B2B 톤 — 한 줄의 농담도, 윙크도 없이. 이 **과잉된 진지함 자체가 이 프로젝트의 유머**입니다.
 
-## 🎭 왜 만들었나
+## 왜 만들었나
 
 2024–2025 동안 업계에 만연한 두 가지 클리셰를 겨냥했습니다.
 
@@ -30,15 +30,15 @@ ARITHMOS는 이 두 문법을 **계산기라는 가장 기초적인 도구**에 
 
 "계산마다 결제" 기능은 이 풍자의 정점입니다 — 월 구독을 이미 하고 있음에도 답을 보려면 한 번 더 돈을 내야 하는, **문자 그대로 쓸모없는 SaaS**.
 
-## ✨ 핵심 기능
+## 핵심 기능
 
-### 📄 랜딩 페이지 — `/`
+### 랜딩 페이지 — `/`
 - **Full-screen 비디오 배경** (`object-cover`, autoplay/loop/muted)
 - Instrument Serif 160px `ARITHMOS` 워드마크 + 태그라인
 - Services (핵심 기술 3개) / Reviews (도입 사례 3개) / Contact CTA / Footer
 - 전원 다크 모드 + 퍼플 `#7b39fc` 액센트 + 골드 `#c9a961` 시그니처
 
-### 💳 계산기 — `/calculator`
+### 계산기 — `/calculator`
 다섯 가지 **모델 테마**에 따라 UI가 즉시 전환:
 
 | 모델 | 소재 컨셉 | 디자인 언어 | 계산당 가격 |
@@ -58,19 +58,19 @@ ARITHMOS는 이 두 문법을 **계산기라는 가장 기초적인 도구**에 
 6. `reveal` 액션 디스패치 → 블러 해제 → `56` 공개
 7. 모달을 닫고 결제하지 않으면 **영구 잠금** (C 버튼으로 리셋만 가능)
 
-### 📑 모델 상세 페이지 — `/models/[id]`
+### 모델 상세 페이지 — `/models/[id]`
 - Next.js 16 동적 라우트로 5개 모델을 단일 템플릿에서 처리 (`generateStaticParams`)
 - Hero (티어 + 소재 + 가격) → Specs table → Features 넘버링 → CTA → Footer
 - Quantum은 Holographic 컬러를 `gradient-holographic` 애니메이션으로 렌더, 다른 모델은 각자의 액센트 컬러로 통일
 - `/models` 인덱스는 5개 카드 그리드
 
-### 💰 구독 체크아웃 — `/checkout?model=pro`
+### 구독 체크아웃 — `/checkout?model=pro`
 - Stripe **Hosted Checkout** 리다이렉트 (월 구독, `mode: "subscription"`)
 - `.env.local`에 키 없으면 graceful fallback — "Stripe 미연동 · 설정 방법 안내" UI + 테스트 성공 시뮬레이션 링크
 - `/checkout/success?session_id=…` — 세션 조회 후 확인 페이지
 - 모든 체크아웃은 **Stripe Test Mode 전용** (`sk_live_*`는 import 시 throw)
 
-## 🧰 기술 스택
+## 기술 스택
 
 - **Framework** — [Next.js 16](https://nextjs.org) (App Router, Turbopack, React 19.2 Canary)
 - **Language** — TypeScript strict (`any` 금지)
@@ -82,7 +82,7 @@ ARITHMOS는 이 두 문법을 **계산기라는 가장 기초적인 도구**에 
 - **State** — React `useReducer` for calculator state machine (framework-agnostic pure TS)
 - **Deployment target** — Vercel-ready (`adapterPath` 호환)
 
-## 🔬 주요 구현 사항
+## 주요 구현 사항
 
 ### 1. Calculator 상태기계 — `components/calculator/calcReducer.ts`
 순수 TypeScript 리듀서. React 의존성 없고, 단위 테스트 가능한 구조.
@@ -215,7 +215,6 @@ Tailwind v4는 CSS 기반 설정. `globals.css`에서:
 
 - `next/font/google` 변수(`--next-font-*`)를 `@theme inline` 변수로 브릿지
 - 결과: `font-manrope`, `font-cabin`, `font-instrument-serif` 유틸리티가 Tailwind 레벨에서 작동
-- 대문자화는 `<em>` 대신 유지 (italic 자동 스타일링은 Korean 본문에서 비활성)
 
 ### 7. 계산기 키보드 입력
 모달이 열려 있을 땐 키보드 이벤트 무시하도록 guard.
@@ -237,7 +236,7 @@ useEffect(() => {
 
 키 매핑: `0–9`, `+`, `-`, `*/x`, `/`, `Enter/=`, `Escape/c`, `.`, `%`
 
-## 📂 프로젝트 구조
+## 프로젝트 구조
 
 ```
 arithmos/
@@ -272,7 +271,7 @@ arithmos/
     └── supabase.ts                       # Supabase 스켈레톤 (미사용)
 ```
 
-## 🛠 로컬 실행
+## 로컬 실행
 
 ### 요구 사항
 - Node.js 20.9+ (Next.js 16 요구)
@@ -312,31 +311,31 @@ Turbopack 기반 — 초기 컴파일 ~600ms, HMR 수십 ms.
 - 계산기에서 `=` 누르기 → Stripe Embedded Checkout 모달
 - 카드: `4242 4242 4242 4242` / 만료 임의 미래 / CVC 임의 3자리
 
-## 🎨 디자인 토큰
+## 디자인 토큰
 
 ```css
-Background:      #0a0a0a
-Surface:         #111111
+Background:       #0a0a0a
+Surface:          #111111
 Surface Elevated: #1a1a1a
-Border:          #2a2a2a
-Foreground:      #f5f5f7
-Foreground 2nd:  #86868b
+Border:           #2a2a2a
+Foreground:       #f5f5f7
+Foreground 2nd:   #86868b
 
-Brand Purple:    #7b39fc   (operators, CTAs)
-Brand Gold:      #c9a961   (accents, trim, Ultra/Pro)
+Brand Purple:     #7b39fc   (operators, CTAs)
+Brand Gold:       #c9a961   (accents, trim, Ultra/Pro)
 
-Destructive:     #ff3b30
-Success:         #30d158
+Destructive:      #ff3b30
+Success:          #30d158
 ```
 
-## 📜 라이선스 · 크레딧
+## 라이선스 · 크레딧
 
 - **코드**: 해커톤 출품작. 상업적 사용 금지.
 - **폰트**: Instrument Serif, Manrope, Cabin, Inter, JetBrains Mono (OFL / Google Fonts 라이선스)
 - **Pretendard**: Open Font License
 - 모든 이미지·영상은 데모 목적의 플레이스홀더
 
-## ⚠️ 면책
+## 면책
 
 **본 프로젝트는 데모 구현입니다. 실제 결제는 발생하지 않습니다. 테스트 카드: 4242 4242 4242 4242**
 
