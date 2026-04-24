@@ -8,7 +8,13 @@
       "Bash(node -e ' *)",
       "Bash(taskkill *)",
       "Bash(npm run *)",
-      "Bash(git init *)"
+      "Bash(git init *)",
+      "Bash(git push *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git commit -m 'docs: remove emojis from README headings *)",
+      "Bash(GIT_TERMINAL_PROMPT=0 GCM_INTERACTIVE=never git push -u origin main)",
+      "Bash(npm install *)"
     ]
   }
 }

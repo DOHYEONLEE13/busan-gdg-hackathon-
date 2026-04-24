@@ -80,7 +80,7 @@ ARITHMOS는 이 두 문법을 **계산기라는 가장 기초적인 도구**에 
   - `stripe@22` (server, `lib/stripe.ts` lazy singleton)
   - `@stripe/stripe-js@9` (client, `createEmbeddedCheckoutPage`)
 - **State** — React `useReducer` for calculator state machine (framework-agnostic pure TS)
-- **Deployment target** — Vercel-ready (`adapterPath` 호환)
+- **Deployment** — Cloudflare Workers via [`@opennextjs/cloudflare`](https://github.com/opennextjs/opennextjs-cloudflare) (Vercel도 `adapterPath` 설정 없이 즉시 배포 가능)
 
 ## 주요 구현 사항
 
@@ -310,6 +310,61 @@ Turbopack 기반 — 초기 컴파일 ~600ms, HMR 수십 ms.
 - 모델 페이지 "도입 구독 시작" → Stripe Hosted Checkout
 - 계산기에서 `=` 누르기 → Stripe Embedded Checkout 모달
 - 카드: `4242 4242 4242 4242` / 만료 임의 미래 / CVC 임의 3자리
+
+## Cloudflare 배포
+
+OpenNext.js Cloudflare 어댑터(`@opennextjs/cloudflare`) 기반. Next.js 16의 서버 컴포넌트·API 라우트·서버 리다이렉트 전부 Workers 런타임에서 실행됩니다.
+
+### 구성
+- `wrangler.jsonc` — Worker 이름, entry, assets 바인딩, 호환 플래그 (`nodejs_compat`)
+- `open-next.config.ts` — OpenNext 어댑터 설정
+- `package.json` — `cf:build` / `cf:preview` / `cf:deploy` 스크립트
+- 빌드 산출물: `.open-next/worker.js` + `.open-next/assets/` (둘 다 gitignore)
+
+### 최초 1회 설정
+
+```bash
+# 의존성 설치 (어댑터 + wrangler CLI 포함)
+npm install
+
+# Cloudflare 계정 로그인
+npx wrangler login
+```
+
+### 환경변수 주입
+
+```bash
+# 서버 전용 시크릿 (Stripe)
+npx wrangler secret put STRIPE_SECRET_KEY
+# 프롬프트에 sk_test_... 붙여넣기
+
+npx wrangler secret put STRIPE_WEBHOOK_SECRET   # 선택
+```
+
+`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`는 클라이언트 번들에 포함되어야 하므로 **빌드 시점**에 필요. 세 가지 방법 중 선택:
+
+1. `wrangler.jsonc`의 `vars` 섹션에 추가 (publishable 키는 공개되어도 안전)
+2. Cloudflare 대시보드 → Workers → Settings → Variables → Environment Variables에 추가
+3. `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_... npm run cf:deploy` 처럼 인라인 주입
+
+### 로컬 프리뷰
+
+```bash
+npm run cf:preview
+# Workers 런타임과 동일한 환경으로 localhost 실행
+```
+
+### 배포
+
+```bash
+npm run cf:deploy
+# 빌드 → 업로드 → https://arithmos.<ACCOUNT>.workers.dev
+```
+
+### 주의
+- `pro.glb` (3MB), 비디오, HDRI는 `.open-next/assets/`로 복사되어 Workers Assets로 서빙 (Workers 페이로드 제한 10MB에 포함 안 됨)
+- API 라우트는 모두 `export const runtime = "nodejs"` — Workers의 `nodejs_compat` 플래그로 Stripe SDK (Node Buffer 등) 정상 동작
+- Stripe 웹훅을 쓸 경우 `STRIPE_WEBHOOK_SECRET`도 시크릿으로 주입하고, 대시보드에서 엔드포인트 URL을 `https://arithmos.<ACCOUNT>.workers.dev/api/stripe/webhook`로 등록
 
 ## 디자인 토큰
 

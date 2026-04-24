@@ -1,0 +1,43 @@
+/**
+ * Cloudflare Workers deployment config for ARITHMOS™.
+ *
+ * Uses @opennextjs/cloudflare to run Next.js 16 on Workers with full
+ * App Router, RSC, and API route support. Static assets (including the
+ * GLB model and video/HDRI) are served from .open-next/assets.
+ *
+ * Secrets (STRIPE_SECRET_KEY, etc.) are NOT committed here — set them
+ * via `wrangler secret put <NAME>` after first deploy.
+ */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "arithmos",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-03-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  },
+  /**
+   * Public, build-time env vars.
+   * NEXT_PUBLIC_* keys are safe to commit — the Stripe publishable key
+   * is specifically designed to be shipped in the client bundle.
+   *
+   * Override per environment via `wrangler deploy --var KEY:value` or
+   * set in Cloudflare dashboard (Workers → Settings → Variables).
+   */
+  "vars": {
+    "NEXT_PUBLIC_APP_URL": "https://arithmos.workers.dev"
+  }
+  /**
+   * Required secrets (set after first deploy):
+   *   wrangler secret put STRIPE_SECRET_KEY
+   *   wrangler secret put STRIPE_WEBHOOK_SECRET   # optional
+   *
+   * Required build-time public var (set in dashboard or via --var):
+   *   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+   */
+}
