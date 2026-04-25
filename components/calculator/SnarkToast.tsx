@@ -60,23 +60,23 @@ export function SnarkToast({ modelId, expression, value, onDismiss }: Props) {
     <div
       role="status"
       aria-live="polite"
-      className="fixed bottom-8 left-1/2 z-30 w-[calc(100%-32px)] max-w-[480px] rounded-[16px] bg-[#15101e]/95 backdrop-blur-md border border-[#7b39fc]/35 shadow-[0_18px_60px_rgba(123,57,252,0.4)] px-5 py-4 flex items-start gap-3 animate-[snark-rise_360ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
+      className="fixed bottom-10 left-1/2 z-30 w-[calc(100%-24px)] max-w-[640px] rounded-[20px] bg-[#15101e]/95 backdrop-blur-md border border-[#7b39fc]/40 shadow-[0_24px_80px_rgba(123,57,252,0.5)] px-7 py-6 flex items-start gap-4 animate-[snark-rise_360ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
     >
-      <span aria-hidden="true" className="text-[20px] leading-none mt-0.5">
+      <span aria-hidden="true" className="text-[34px] leading-none mt-0.5">
         🎉
       </span>
-      <p className="flex-1 font-inter text-[13.5px] text-white/90 leading-[1.5]">
+      <p className="flex-1 font-inter text-[16px] sm:text-[17px] text-white/95 leading-[1.55] font-medium">
         {text}
       </p>
       <button
         type="button"
         onClick={onDismiss}
         aria-label="닫기"
-        className="shrink-0 w-6 h-6 -mt-0.5 -mr-1 rounded-full text-white/50 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center"
+        className="shrink-0 w-8 h-8 -mt-1 -mr-2 rounded-full text-white/55 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center"
       >
         <svg
-          width="12"
-          height="12"
+          width="16"
+          height="16"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
