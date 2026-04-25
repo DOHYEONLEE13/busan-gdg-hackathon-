@@ -184,21 +184,43 @@ export function DemoPaymentModal({
             />
           )}
 
-          {/* Trust panel — bigger, friendlier framing so judges/visitors
-              feel safe clicking. Green tint + shield icon read as a
-              security badge rather than fine print. */}
-          <div className="mt-4 rounded-[12px] border border-[#7ed0a8]/25 bg-[#7ed0a8]/[0.06] px-4 py-3 flex items-start gap-3">
-            <ShieldIcon />
-            <div className="flex-1 min-w-0">
-              <div className="font-cabin font-medium uppercase tracking-[0.16em] text-[11px] text-[#7ed0a8]">
-                Demo Environment · No Real Charges
-              </div>
-              <p className="mt-1.5 font-inter text-[12.5px] text-white/80 leading-[1.55]">
-                본 화면은 <span className="text-white">시연용 환경</span>입니다. 실제
-                결제는 발생하지 않으며, 어떠한 카드 정보도 입력·전송되지
-                않습니다. ARITHMOS Internal Accuracy Standard v2.1.
-              </p>
+          {/* Trust panel — checklist-style, plain language, multiple
+              specific reassurances. Designed to dissolve any "wait,
+              do I need to enter my card?" hesitation in <2 seconds. */}
+          <div className="mt-4 rounded-[14px] border border-[#7ed0a8]/30 bg-[#7ed0a8]/[0.07] px-4 py-3.5">
+            <div className="flex items-center gap-2">
+              <ShieldIcon />
+              <span className="font-cabin font-semibold uppercase tracking-[0.16em] text-[12px] text-[#7ed0a8]">
+                100% 안전한 시연 환경
+              </span>
             </div>
+            <ul className="mt-2.5 space-y-1.5 font-inter text-[13px] text-white/85 leading-[1.45]">
+              <li className="flex items-start gap-2">
+                <CheckMark />
+                <span>
+                  <span className="text-white">카드 정보 일절 요구·입력 안 함</span>{" "}
+                  — 화면 어디서도 카드 번호를 입력하지 않습니다
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckMark />
+                <span>
+                  <span className="text-white">실제 결제 절대 발생 안 함</span> —
+                  Stripe 호출도 없는 가짜 처리 화면입니다
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckMark />
+                <span>
+                  <span className="text-white">개인정보 / 계정가입 없음</span> —
+                  버튼 누르면 1.5초 후 결과 화면으로 자동 이동
+                </span>
+              </li>
+            </ul>
+            <p className="mt-3 pt-2.5 border-t border-[#7ed0a8]/15 font-inter text-[11px] text-white/45 leading-relaxed">
+              ARITHMOS는 풍자적 컨셉의 포트폴리오 데모입니다. 안심하고
+              눌러보세요.
+            </p>
           </div>
         </div>
       </div>
@@ -254,6 +276,25 @@ function BoltIcon() {
       aria-hidden="true"
     >
       <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />
+    </svg>
+  );
+}
+
+function CheckMark() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#7ed0a8"
+      strokeWidth="3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className="shrink-0 mt-[3px]"
+    >
+      <path d="M20 6L9 17l-5-5" />
     </svg>
   );
 }
