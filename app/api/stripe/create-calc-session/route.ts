@@ -49,6 +49,9 @@ export async function POST(req: NextRequest) {
       mode: "payment",
       redirect_on_completion: "never",
       customer: demoCustomerId,
+      // Force card-only — Stripe Link is enabled by default and crowds
+      // out the saved-card one-click option in embedded checkout.
+      payment_method_types: ["card"],
       line_items: [
         {
           price_data: {

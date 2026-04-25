@@ -53,46 +53,55 @@ export function getStripe(): Stripe {
  */
 
 const DEMO_CUSTOMER_EMAIL = "demo@arithmos.test";
-const DEMO_TEST_PAYMENT_METHOD = "pm_card_visa";
 
 let cachedDemoCustomerId: string | null = null;
 
+/* Get-or-create the demo customer AND ensure they have a saved card.
+   Idempotent — safe to run on every cold start. The check is two list
+   calls + (rarely) one create + one attach + one update. */
 export async function getDemoCustomerId(stripe: Stripe): Promise<string> {
   if (cachedDemoCustomerId) return cachedDemoCustomerId;
 
-  // Allow an env override — useful if you want to pin a specific customer
-  // created manually in the Stripe dashboard.
   const envOverride = process.env.STRIPE_DEMO_CUSTOMER_ID;
   if (envOverride) {
     cachedDemoCustomerId = envOverride;
     return envOverride;
   }
 
+  // 1. Look up or create the customer
   const existing = await stripe.customers.list({
     email: DEMO_CUSTOMER_EMAIL,
     limit: 1,
   });
+  const customerId = existing.data[0]
+    ? existing.data[0].id
+    : (
+        await stripe.customers.create({
+          email: DEMO_CUSTOMER_EMAIL,
+          name: "ARITHMOS Demo Subscriber",
+          description: "Auto-provisioned for prototype demo (test mode only).",
+        })
+      ).id;
 
-  if (existing.data[0]) {
-    cachedDemoCustomerId = existing.data[0].id;
-    return cachedDemoCustomerId;
+  // 2. Ensure they have a saved card. If none, create a real PaymentMethod
+  //    from the `tok_visa` test token, attach it, and set as default.
+  const pms = await stripe.paymentMethods.list({
+    customer: customerId,
+    type: "card",
+    limit: 1,
+  });
+
+  if (pms.data.length === 0) {
+    const pm = await stripe.paymentMethods.create({
+      type: "card",
+      card: { token: "tok_visa" },
+    });
+    await stripe.paymentMethods.attach(pm.id, { customer: customerId });
+    await stripe.customers.update(customerId, {
+      invoice_settings: { default_payment_method: pm.id },
+    });
   }
 
-  // First call ever — provision the demo customer + attach test card.
-  const created = await stripe.customers.create({
-    email: DEMO_CUSTOMER_EMAIL,
-    name: "ARITHMOS Demo Subscriber",
-    description: "Auto-provisioned for prototype demo (test mode only).",
-  });
-
-  await stripe.paymentMethods.attach(DEMO_TEST_PAYMENT_METHOD, {
-    customer: created.id,
-  });
-
-  await stripe.customers.update(created.id, {
-    invoice_settings: { default_payment_method: DEMO_TEST_PAYMENT_METHOD },
-  });
-
-  cachedDemoCustomerId = created.id;
-  return created.id;
+  cachedDemoCustomerId = customerId;
+  return customerId;
 }
