@@ -6,6 +6,7 @@ import {
   formatKrw,
   type ArithmosModelId,
 } from "@/lib/constants";
+import { CenturionCardBg } from "./effects/CenturionCardBg";
 
 type Props = {
   modelId: ArithmosModelId;
@@ -158,31 +159,40 @@ export function DemoPaymentModal({
           </div>
         </div>
 
-        {/* Action area */}
+        {/* Action area — Centurion card 3D background floats behind the
+            primary CTA / processing pill. Pointer events are scoped to
+            the button so the canvas never steals clicks. */}
         <div className="px-6 pb-6">
-          {stage === "idle" ? (
-            <button
-              type="button"
-              onClick={() => {
-                setStage("processing");
-                setPhaseIdx(0);
-              }}
-              className={`w-full h-12 rounded-[12px] font-cabin font-medium text-[14.5px] tracking-[0.04em] flex items-center justify-center gap-2 transition-[transform,background-color] hover:scale-[1.01] active:scale-[0.99] ${
-                isHalo
-                  ? "gradient-holographic text-black shadow-[0_8px_28px_rgba(168,85,247,0.45)]"
-                  : "bg-[#7b39fc] text-white hover:bg-[#8d4dff] shadow-[0_6px_22px_rgba(123,57,252,0.4)]"
-              }`}
-            >
-              <BoltIcon />
-              {formatKrw(price)} · 1-Tap 결제 승인
-            </button>
-          ) : (
-            <ProcessingState
-              phaseIdx={phaseIdx}
-              done={stage === "done"}
-              isHalo={isHalo}
-            />
-          )}
+          <div className="relative h-[120px] rounded-[14px] overflow-hidden border border-white/10 bg-gradient-to-b from-black/40 via-[#0a0814]/60 to-black/40">
+            <CenturionCardBg />
+            <div className="absolute inset-0 flex items-end p-3">
+              {stage === "idle" ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStage("processing");
+                    setPhaseIdx(0);
+                  }}
+                  className={`relative w-full h-12 rounded-[12px] font-cabin font-medium text-[14.5px] tracking-[0.04em] flex items-center justify-center gap-2 transition-[transform,background-color] hover:scale-[1.01] active:scale-[0.99] backdrop-blur-md ${
+                    isHalo
+                      ? "gradient-holographic text-black shadow-[0_8px_28px_rgba(168,85,247,0.45)]"
+                      : "bg-[#7b39fc]/90 text-white hover:bg-[#8d4dff] shadow-[0_6px_22px_rgba(123,57,252,0.4)]"
+                  }`}
+                >
+                  <BoltIcon />
+                  {formatKrw(price)} · 1-Tap 결제 승인
+                </button>
+              ) : (
+                <div className="relative w-full">
+                  <ProcessingState
+                    phaseIdx={phaseIdx}
+                    done={stage === "done"}
+                    isHalo={isHalo}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
 
           <p className="mt-4 font-inter text-[10.5px] text-white/35 text-center leading-relaxed">
             본 데모는 시연용 환경에서 실행되며, 실제 결제는 발생하지 않습니다.
