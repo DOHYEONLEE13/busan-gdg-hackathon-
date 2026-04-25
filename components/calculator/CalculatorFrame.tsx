@@ -1,9 +1,9 @@
-import { useEffect, useRef } from "react";
 import { OPERATION_PRICES, formatKrw, type ArithmosModelId } from "@/lib/constants";
 import type { CalcAction, CalcState } from "./calcReducer";
 import { Keypad } from "./Keypad";
 import type { CalcTheme } from "./themes";
 import { RevealEffect } from "./effects/RevealEffect";
+import { ReasoningPanel } from "./ReasoningPanel";
 
 type Props = {
   modelId: ArithmosModelId;
@@ -77,7 +77,11 @@ export function CalculatorFrame({
         </div>
 
         {thinking ? (
-          <ReasoningPanel log={state.thinkingLog} expression={state.lastExpression} />
+          <ReasoningPanel
+            log={state.thinkingLog}
+            expression={state.lastExpression}
+            modelId={modelId}
+          />
         ) : null}
 
         {state.errorMessage && !thinking ? (
@@ -115,57 +119,6 @@ export function CalculatorFrame({
             </p>
           </div>
         )}
-      </div>
-    </div>
-  );
-}
-
-function ReasoningPanel({
-  log,
-  expression,
-}: {
-  log: string[];
-  expression: string | null;
-}) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
-  }, [log]);
-
-  return (
-    <div className="mt-3 rounded-[12px] border border-white/10 bg-black/55 backdrop-blur-sm overflow-hidden">
-      <div className="flex items-center justify-between px-3 py-2 border-b border-white/5">
-        <span className="font-cabin uppercase tracking-[0.28em] text-[10px] text-[#c9a961]">
-          Quantum Reasoning Pipeline
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#c9a961] animate-pulse" />
-          <span className="font-cabin text-[10px] text-white/45 uppercase tracking-[0.2em]">
-            Live
-          </span>
-        </span>
-      </div>
-      <div
-        ref={scrollRef}
-        className="px-3 py-2 max-h-[140px] overflow-y-auto font-mono text-[11px] text-white/65 leading-relaxed space-y-1"
-      >
-        {expression ? (
-          <div className="text-white/35">$ evaluate &quot;{expression}&quot;</div>
-        ) : null}
-        {log.map((line, i) => (
-          <div
-            key={i}
-            className={
-              line.startsWith("▸") ? "text-[#c9a961]/85" : "text-white/70"
-            }
-          >
-            {line}
-          </div>
-        ))}
-        {log.length === 0 ? (
-          <div className="text-white/30 italic">awaiting reasoning…</div>
-        ) : null}
       </div>
     </div>
   );
