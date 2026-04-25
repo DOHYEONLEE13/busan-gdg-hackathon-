@@ -15,6 +15,7 @@ const LINKS: NavLink[] = [
   { label: "제품", href: "/models", type: "products" },
   { label: "요금제", href: "/#pricing" },
   { label: "도입 사례", href: "/#reviews" },
+  { label: "소개", href: "/about" },
   { label: "문의", href: "/#contact" },
 ];
 
