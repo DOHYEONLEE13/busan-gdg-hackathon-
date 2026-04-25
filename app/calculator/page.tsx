@@ -10,11 +10,11 @@ export default function CalculatorPage() {
     <main className="relative h-screen w-screen overflow-hidden bg-[#0a0a0a]">
       <Link
         href="/"
-        className="absolute top-6 left-6 z-10 font-manrope text-[13px] text-white/60 hover:text-white transition-colors"
+        className="absolute top-6 left-6 z-20 font-manrope text-[13px] text-white/60 hover:text-white transition-colors"
       >
-        ← 랜딩으로
+        ← 메인화면으로
       </Link>
-      <div className="absolute top-6 right-6 z-10 font-instrument-serif text-white text-[20px] leading-none tracking-tight">
+      <div className="absolute top-6 right-6 z-20 font-instrument-serif text-white text-[20px] leading-none tracking-tight">
         ARITHMOS
         <sup className="ml-0.5 text-[9px] font-manrope align-top translate-y-[1px]">
           ™
