@@ -155,7 +155,7 @@ export function Calculator() {
 
   return (
     <div className="absolute inset-0 flex flex-col">
-      <div className="flex justify-center pt-20 pb-2 z-10 px-4">
+      <div className="flex justify-center pt-14 sm:pt-20 pb-2 z-10 px-4 overflow-x-auto">
         <ModelSelector
           selected={modelId}
           onSelect={setModelId}
@@ -163,7 +163,7 @@ export function Calculator() {
         />
       </div>
 
-      <div className="relative flex-1 flex items-center justify-center px-6 pb-16">
+      <div className="relative flex-1 flex items-center justify-center px-4 sm:px-6 pb-8 sm:pb-16">
         <CalculatorFrame
           modelId={modelId}
           theme={theme}
@@ -175,7 +175,8 @@ export function Calculator() {
         />
       </div>
 
-      <div className="pointer-events-none absolute bottom-5 left-1/2 -translate-x-1/2 font-inter text-[12px] text-white/35 z-10 text-center">
+      {/* Keyboard input hint — only meaningful on devices with a keyboard. */}
+      <div className="hidden sm:block pointer-events-none absolute bottom-5 left-1/2 -translate-x-1/2 font-inter text-[12px] text-white/35 z-10 text-center">
         키보드 입력 가능 · 숫자 / + − × ÷ / Enter(=) / Esc(C) / . / %
       </div>
 

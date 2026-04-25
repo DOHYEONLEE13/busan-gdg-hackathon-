@@ -54,13 +54,13 @@ export default async function ModelPage(props: {
       </div>
 
       {/* Hero */}
-      <section className="relative px-6 lg:px-[120px] pt-10 pb-28 overflow-hidden">
+      <section className="relative px-6 lg:px-[120px] pt-8 pb-16 sm:pt-10 sm:pb-24 lg:pb-28 overflow-hidden">
         <video
           autoPlay
           loop
           muted
           playsInline
-          preload="auto"
+          preload="metadata"
           className="pointer-events-none absolute inset-0 h-full w-full object-cover"
           aria-hidden="true"
         >

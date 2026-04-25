@@ -1,6 +1,6 @@
 export function Hero() {
   return (
-    <section className="relative z-10 flex flex-col items-center text-center px-6 mt-32 pb-24">
+    <section className="relative z-10 flex flex-col items-center text-center px-6 mt-16 sm:mt-24 lg:mt-32 pb-12 sm:pb-20 lg:pb-24">
       <div className="inline-flex items-center gap-2 h-[38px] pl-[6px] pr-4 rounded-[10px] bg-[rgba(85,80,110,0.4)] backdrop-blur-md border border-[rgba(164,132,215,0.5)]">
         <span className="flex items-center h-[26px] px-2 rounded-[6px] bg-[#7b39fc] text-white font-cabin font-medium text-[12px] leading-none">
           NEW
