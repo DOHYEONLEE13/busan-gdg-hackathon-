@@ -16,7 +16,7 @@ type StreamChunk =
 
 export function Calculator() {
   const [state, dispatch] = useReducer(calcReducer, initialState);
-  const [modelId, setModelId] = useState<ArithmosModelId>("one");
+  const [modelId, setModelId] = useState<ArithmosModelId>("ultra");
   const [modalOpen, setModalOpen] = useState(false);
   const theme = THEMES[modelId];
   const locked = state.pendingResult !== null;
