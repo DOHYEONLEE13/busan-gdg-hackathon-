@@ -23,7 +23,7 @@ export function Reviews() {
   return (
     <section
       id="reviews"
-      className="relative bg-[#0a0a0a] px-6 lg:px-[120px] py-24 lg:py-32 border-t border-white/5"
+      className="relative bg-[#0a0a0a] px-6 lg:px-[120px] py-16 lg:py-24 border-t border-white/5"
     >
       <div className="max-w-[1200px] mx-auto">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">

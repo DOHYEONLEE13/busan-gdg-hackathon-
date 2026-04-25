@@ -17,7 +17,7 @@ export function Services() {
   return (
     <section
       id="services"
-      className="relative bg-[#0a0a0a] px-6 lg:px-[120px] py-24 lg:py-32"
+      className="relative bg-[#0a0a0a] px-6 lg:px-[120px] py-16 lg:py-24"
     >
       <div className="max-w-[1200px] mx-auto">
         <div className="max-w-[720px]">

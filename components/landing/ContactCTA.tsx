@@ -4,7 +4,7 @@ export function ContactCTA() {
   return (
     <section
       id="contact"
-      className="relative bg-[#0a0a0a] px-6 lg:px-[120px] py-24 lg:py-32 border-t border-white/5"
+      className="relative bg-[#0a0a0a] px-6 lg:px-[120px] py-16 lg:py-24 border-t border-white/5"
     >
       <div className="relative max-w-[1200px] mx-auto rounded-[32px] overflow-hidden bg-gradient-to-br from-[#2b2344] via-[#3b2a5e] to-[#1a1530] border border-white/10 p-10 lg:p-20">
         <div
