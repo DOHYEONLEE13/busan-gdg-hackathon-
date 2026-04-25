@@ -161,6 +161,42 @@ body {
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+/* ─── Reveal effects (per tier) ────────────────────────────────────────────── */
+
+@keyframes reveal-fade-up {
+  from { opacity: 0; transform: translateY(14px) scale(0.96); filter: blur(4px); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    filter: blur(0);   }
+}
+
+@keyframes typewriter-cursor {
+  0%, 49%   { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes ultra-shutter {
+  0%   { clip-path: inset(50% 0 50% 0); opacity: 0; filter: blur(10px); }
+  55%  { clip-path: inset(0 0 0 0);     opacity: 1; filter: blur(0);    }
+  100% { clip-path: inset(0 0 0 0);     opacity: 1; filter: blur(0);    }
+}
+
+@keyframes ultra-shimmer {
+  0%   { transform: translateX(-100%); opacity: 0; }
+  30%  { opacity: 1; }
+  100% { transform: translateX(120%);  opacity: 0; }
+}
+
+@keyframes quantum-glitch {
+  0%, 100% { transform: translate(0, 0); }
+  25%      { transform: translate(-1px, 1px); }
+  50%      { transform: translate(1px, -1px); }
+  75%      { transform: translate(-1px, -1px); }
+}
+
+@keyframes cert-rise {
+  from { opacity: 0; transform: translateY(-8px) scaleY(0.9); }
+  to   { opacity: 1; transform: translateY(0)   scaleY(1);    }
+}
+
 /* ─── Scrollbar ────────────────────────────────────────────────────────────── */
 
 ::-webkit-scrollbar { width: 4px; }

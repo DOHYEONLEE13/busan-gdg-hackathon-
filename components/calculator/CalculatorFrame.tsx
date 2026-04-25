@@ -3,6 +3,7 @@ import { OPERATION_PRICES, formatKrw, type ArithmosModelId } from "@/lib/constan
 import type { CalcAction, CalcState } from "./calcReducer";
 import { Keypad } from "./Keypad";
 import type { CalcTheme } from "./themes";
+import { RevealEffect } from "./effects/RevealEffect";
 
 type Props = {
   modelId: ArithmosModelId;
@@ -10,6 +11,8 @@ type Props = {
   state: CalcState;
   dispatch: (action: CalcAction) => void;
   onRequestReveal: () => void;
+  revealingValue: string | null;
+  onRevealDone: () => void;
 };
 
 export function CalculatorFrame({
@@ -18,9 +21,12 @@ export function CalculatorFrame({
   state,
   dispatch,
   onRequestReveal,
+  revealingValue,
+  onRevealDone,
 }: Props) {
   const locked = state.pendingResult !== null;
   const thinking = state.phase === "thinking";
+  const revealing = revealingValue !== null;
   const price = OPERATION_PRICES[modelId];
 
   const metaLabel = (() => {
@@ -46,18 +52,27 @@ export function CalculatorFrame({
             <span className={theme.displayTierClass}>{theme.tier}</span>
           </div>
           <div className="mt-2 text-right overflow-hidden relative">
-            <span
-              className={`${theme.displayValueClass} transition-[filter,opacity] duration-300 ${
-                thinking
-                  ? "blur-[10px] opacity-30 select-none"
-                  : locked
-                    ? "blur-[16px] opacity-70 select-none"
-                    : ""
-              }`}
-              aria-hidden={thinking || locked}
-            >
-              {thinking ? "—" : state.display}
-            </span>
+            {revealing ? (
+              <RevealEffect
+                modelId={modelId}
+                value={revealingValue}
+                displayClass={theme.displayValueClass}
+                onDone={onRevealDone}
+              />
+            ) : (
+              <span
+                className={`${theme.displayValueClass} transition-[filter,opacity] duration-300 ${
+                  thinking
+                    ? "blur-[10px] opacity-30 select-none"
+                    : locked
+                      ? "blur-[16px] opacity-70 select-none"
+                      : ""
+                }`}
+                aria-hidden={thinking || locked}
+              >
+                {thinking ? "—" : state.display}
+              </span>
+            )}
           </div>
         </div>
 

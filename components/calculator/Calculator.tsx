@@ -18,6 +18,7 @@ export function Calculator() {
   const [state, dispatch] = useReducer(calcReducer, initialState);
   const [modelId, setModelId] = useState<ArithmosModelId>("ultra");
   const [modalOpen, setModalOpen] = useState(false);
+  const [revealingValue, setRevealingValue] = useState<string | null>(null);
   const theme = THEMES[modelId];
   const locked = state.pendingResult !== null;
   const abortRef = useRef<AbortController | null>(null);
@@ -118,8 +119,15 @@ export function Calculator() {
   }, [modalOpen]);
 
   const handleComplete = useCallback(() => {
+    // Capture the locked value before reveal clears it — the per-tier
+    // reveal effect will play it back over the display.
+    setRevealingValue(state.pendingResult ?? state.display);
     dispatch({ type: "reveal" });
     setModalOpen(false);
+  }, [state.pendingResult, state.display]);
+
+  const handleRevealDone = useCallback(() => {
+    setRevealingValue(null);
   }, []);
 
   const handleCancel = useCallback(() => {
@@ -151,6 +159,8 @@ export function Calculator() {
           state={state}
           dispatch={dispatch}
           onRequestReveal={handleRequestReveal}
+          revealingValue={revealingValue}
+          onRevealDone={handleRevealDone}
         />
       </div>
 
