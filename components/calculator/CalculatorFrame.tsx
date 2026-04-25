@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { OPERATION_PRICES, formatKrw, type ArithmosModelId } from "@/lib/constants";
 import type { CalcAction, CalcState } from "./calcReducer";
 import { Keypad } from "./Keypad";
@@ -19,9 +20,11 @@ export function CalculatorFrame({
   onRequestReveal,
 }: Props) {
   const locked = state.pendingResult !== null;
+  const thinking = state.phase === "thinking";
   const price = OPERATION_PRICES[modelId];
 
   const metaLabel = (() => {
+    if (thinking) return "REASONING…";
     if (locked) return "공개 대기중";
     if (state.display === "Error") return "ERROR";
     if (state.operator && state.previous !== null) {
@@ -45,14 +48,28 @@ export function CalculatorFrame({
           <div className="mt-2 text-right overflow-hidden relative">
             <span
               className={`${theme.displayValueClass} transition-[filter,opacity] duration-300 ${
-                locked ? "blur-[16px] opacity-70 select-none" : ""
+                thinking
+                  ? "blur-[10px] opacity-30 select-none"
+                  : locked
+                    ? "blur-[16px] opacity-70 select-none"
+                    : ""
               }`}
-              aria-hidden={locked}
+              aria-hidden={thinking || locked}
             >
-              {state.display}
+              {thinking ? "—" : state.display}
             </span>
           </div>
         </div>
+
+        {thinking ? (
+          <ReasoningPanel log={state.thinkingLog} expression={state.lastExpression} />
+        ) : null}
+
+        {state.errorMessage && !thinking ? (
+          <div className="mt-3 px-3 py-2 rounded-[8px] bg-amber-500/10 border border-amber-400/20 font-inter text-[11px] text-amber-200/85 leading-relaxed">
+            {state.errorMessage}
+          </div>
+        ) : null}
 
         {locked ? (
           <button
@@ -66,7 +83,7 @@ export function CalculatorFrame({
         ) : null}
 
         {theme.hasKeypad ? (
-          <div className={locked ? "pointer-events-none opacity-55" : ""}>
+          <div className={locked || thinking ? "pointer-events-none opacity-55" : ""}>
             <Keypad theme={theme} dispatch={dispatch} />
           </div>
         ) : (
@@ -83,6 +100,57 @@ export function CalculatorFrame({
             </p>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function ReasoningPanel({
+  log,
+  expression,
+}: {
+  log: string[];
+  expression: string | null;
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [log]);
+
+  return (
+    <div className="mt-3 rounded-[12px] border border-white/10 bg-black/55 backdrop-blur-sm overflow-hidden">
+      <div className="flex items-center justify-between px-3 py-2 border-b border-white/5">
+        <span className="font-cabin uppercase tracking-[0.28em] text-[10px] text-[#c9a961]">
+          Quantum Reasoning Pipeline
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#c9a961] animate-pulse" />
+          <span className="font-cabin text-[10px] text-white/45 uppercase tracking-[0.2em]">
+            Live
+          </span>
+        </span>
+      </div>
+      <div
+        ref={scrollRef}
+        className="px-3 py-2 max-h-[140px] overflow-y-auto font-mono text-[11px] text-white/65 leading-relaxed space-y-1"
+      >
+        {expression ? (
+          <div className="text-white/35">$ evaluate &quot;{expression}&quot;</div>
+        ) : null}
+        {log.map((line, i) => (
+          <div
+            key={i}
+            className={
+              line.startsWith("▸") ? "text-[#c9a961]/85" : "text-white/70"
+            }
+          >
+            {line}
+          </div>
+        ))}
+        {log.length === 0 ? (
+          <div className="text-white/30 italic">awaiting reasoning…</div>
+        ) : null}
       </div>
     </div>
   );

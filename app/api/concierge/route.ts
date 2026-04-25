@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { genai } from "@/lib/gemini";
+import { getGenai } from "@/lib/gemini";
 import { assertSameOrigin } from "@/lib/security";
 
 export const runtime = "nodejs";
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
       parts: [{ text: h.text }],
     }));
 
-    const response = await genai.models.generateContent({
+    const response = await getGenai().models.generateContent({
       model: "gemini-2.5-pro",
       contents: [
         ...history,

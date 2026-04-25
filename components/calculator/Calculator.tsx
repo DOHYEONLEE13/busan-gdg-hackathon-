@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useReducer, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import type { ArithmosModelId } from "@/lib/constants";
 import { CalculatorFrame } from "./CalculatorFrame";
 import { ModelSelector } from "./ModelSelector";
@@ -8,17 +8,101 @@ import { RevealPaymentModal } from "./RevealPaymentModal";
 import { calcReducer, initialState, type CalcAction } from "./calcReducer";
 import { THEMES } from "./themes";
 
+type StreamChunk =
+  | { type: "thought"; text: string }
+  | { type: "result"; text: string }
+  | { type: "done"; tokens: number }
+  | { type: "error"; text: string };
+
 export function Calculator() {
   const [state, dispatch] = useReducer(calcReducer, initialState);
   const [modelId, setModelId] = useState<ArithmosModelId>("one");
   const [modalOpen, setModalOpen] = useState(false);
   const theme = THEMES[modelId];
   const locked = state.pendingResult !== null;
+  const abortRef = useRef<AbortController | null>(null);
 
   /* Open the reveal modal whenever a fresh pending result appears. */
   useEffect(() => {
     if (locked) setModalOpen(true);
   }, [state.pendingResult, locked]);
+
+  /* Kick off the Gemini stream when the reducer enters the thinking phase. */
+  useEffect(() => {
+    if (state.phase !== "thinking" || !state.lastExpression) return;
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+    const expression = state.lastExpression;
+
+    (async () => {
+      try {
+        const res = await fetch("/api/calculate", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ expression, modelId }),
+          signal: controller.signal,
+        });
+
+        if (!res.ok || !res.body) {
+          throw new Error(`Calculation API returned ${res.status}.`);
+        }
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buf = "";
+        let finalResult: string | null = null;
+        let streamError: string | null = null;
+
+        for (;;) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buf += decoder.decode(value, { stream: true });
+
+          for (;;) {
+            const nl = buf.indexOf("\n");
+            if (nl === -1) break;
+            const line = buf.slice(0, nl).trim();
+            buf = buf.slice(nl + 1);
+            if (!line) continue;
+            let chunk: StreamChunk;
+            try {
+              chunk = JSON.parse(line) as StreamChunk;
+            } catch {
+              continue;
+            }
+            if (chunk.type === "thought") {
+              dispatch({ type: "thinking_chunk", text: chunk.text });
+            } else if (chunk.type === "result") {
+              finalResult = chunk.text;
+            } else if (chunk.type === "error") {
+              streamError = chunk.text;
+            }
+            /* "done" is metadata-only — ignore. */
+          }
+        }
+
+        if (streamError) {
+          dispatch({ type: "equals_error", message: streamError });
+        } else if (finalResult !== null && finalResult !== "") {
+          dispatch({ type: "equals_done", result: finalResult });
+        } else {
+          dispatch({
+            type: "equals_error",
+            message: "Reasoning Engine returned no result.",
+          });
+        }
+      } catch (e) {
+        if (controller.signal.aborted) return;
+        dispatch({
+          type: "equals_error",
+          message: e instanceof Error ? e.message : "Stream error.",
+        });
+      }
+    })();
+
+    return () => controller.abort();
+  }, [state.phase, state.lastExpression, modelId]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -46,10 +130,18 @@ export function Calculator() {
     if (locked) setModalOpen(true);
   }, [locked]);
 
+  /* Lock the model selector while a stream is in flight — switching mid-
+     stream would race the abort and the new fetch. */
+  const selectorDisabled = state.phase === "thinking";
+
   return (
     <div className="absolute inset-0 flex flex-col">
       <div className="flex justify-center pt-20 pb-2 z-10 px-4">
-        <ModelSelector selected={modelId} onSelect={setModelId} />
+        <ModelSelector
+          selected={modelId}
+          onSelect={setModelId}
+          disabled={selectorDisabled}
+        />
       </div>
 
       <div className="relative flex-1 flex items-center justify-center px-6 pb-16">

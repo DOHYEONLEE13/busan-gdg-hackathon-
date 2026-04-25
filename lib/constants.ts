@@ -38,7 +38,7 @@ export const ARITHMOS_MODELS = [
     tier: "Professional",
     color: "#5e5ce6",
     material: "Anodized Titanium",
-    geminiModel: "gemini-2.0-flash",
+    geminiModel: "gemini-2.5-flash",
     features: [
       "Thinking Mode™ Visualization Pipeline",
       "Gemini 2.0 Flash Extended Reasoning",
@@ -165,6 +165,49 @@ export const OPERATION_PRICES: Record<ArithmosModelId, number> = {
   ultra: 50_000,
   quantum: 200_000,
   zero: 9_900,
+};
+
+/* Per-tier Gemini thinking budget (token cap). 0 = no thinking (model
+   doesn't support it; UI streams cosmetic phase lines only). Kept tight
+   to bound per-call cost — the show is in the *visible* streaming, not
+   in burning tokens. */
+export const THINKING_BUDGET: Record<ArithmosModelId, number> = {
+  one: 0,
+  zero: 0,
+  pro: 512,
+  ultra: 1024,
+  quantum: 2048,
+};
+
+/* Per-tier theatrical "phase" lines streamed before Gemini. More tier =
+   longer pre-roll. Each line is held ~250ms server-side. */
+export const REASONING_PHASES: Record<ArithmosModelId, readonly string[]> = {
+  one: [
+    "Establishing secure compute envelope",
+    "Initializing Precision Core",
+  ],
+  zero: [
+    "Spatial gesture acquisition complete",
+    "Resolving zero-button intent vector",
+  ],
+  pro: [
+    "Establishing secure compute envelope",
+    "Loading ARITHMOS Internal Accuracy Standard v2.1",
+    "Initializing Thinking Mode Visualization Pipeline",
+  ],
+  ultra: [
+    "Establishing secure compute envelope",
+    "Loading ARITHMOS Internal Accuracy Standard v2.1",
+    "Engaging Liquid Glass refraction layer",
+    "Spinning up Deep Reasoning Engine",
+  ],
+  quantum: [
+    "Establishing secure compute envelope",
+    "Loading ARITHMOS Internal Accuracy Standard v2.1",
+    "Calibrating Probabilistic Calculation Engine v3",
+    "Allocating dedicated infrastructure cluster",
+    "Initiating Quantum Reasoning Pipeline",
+  ],
 };
 
 export function formatKrw(amount: number): string {

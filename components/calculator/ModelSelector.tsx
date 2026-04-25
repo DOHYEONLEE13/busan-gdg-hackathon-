@@ -19,17 +19,23 @@ const MODELS: readonly ModelPill[] = [
 type Props = {
   selected: ArithmosModelId;
   onSelect: (id: ArithmosModelId) => void;
+  disabled?: boolean;
 };
 
-export function ModelSelector({ selected, onSelect }: Props) {
+export function ModelSelector({ selected, onSelect, disabled }: Props) {
   return (
-    <div className="inline-flex items-center gap-1 p-1 rounded-[14px] border border-white/10 bg-white/[0.04] backdrop-blur-md">
+    <div
+      className={`inline-flex items-center gap-1 p-1 rounded-[14px] border border-white/10 bg-white/[0.04] backdrop-blur-md ${
+        disabled ? "opacity-55 pointer-events-none" : ""
+      }`}
+    >
       {MODELS.map((m) => {
         const active = selected === m.id;
         return (
           <button
             key={m.id}
             type="button"
+            disabled={disabled}
             onClick={() => onSelect(m.id)}
             className={`group relative h-9 px-3.5 rounded-[10px] font-cabin font-medium text-[13px] transition-colors ${
               active
