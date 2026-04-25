@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import type { ArithmosModelId } from "@/lib/constants";
 import { CalculatorFrame } from "./CalculatorFrame";
+import { DemoPaymentModal } from "./DemoPaymentModal";
 import { ModelSelector } from "./ModelSelector";
 import { RevealPaymentModal } from "./RevealPaymentModal";
 import { calcReducer, initialState, type CalcAction } from "./calcReducer";
@@ -19,9 +20,19 @@ export function Calculator() {
   const [modelId, setModelId] = useState<ArithmosModelId>("ultra");
   const [modalOpen, setModalOpen] = useState(false);
   const [revealingValue, setRevealingValue] = useState<string | null>(null);
+  /* `?stripe=1` opts into the real Stripe Embedded Checkout flow for
+     debugging / showing judges the underlying integration. Default is the
+     friction-free demo modal. */
+  const [useRealStripe, setUseRealStripe] = useState(false);
   const theme = THEMES[modelId];
   const locked = state.pendingResult !== null;
   const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("stripe") === "1") setUseRealStripe(true);
+  }, []);
 
   /* Open the reveal modal whenever a fresh pending result appears. */
   useEffect(() => {
@@ -169,13 +180,23 @@ export function Calculator() {
       </div>
 
       {modalOpen && locked && state.lastExpression ? (
-        <RevealPaymentModal
-          modelId={modelId}
-          modelName={theme.label}
-          expression={state.lastExpression}
-          onComplete={handleComplete}
-          onCancel={handleCancel}
-        />
+        useRealStripe ? (
+          <RevealPaymentModal
+            modelId={modelId}
+            modelName={theme.label}
+            expression={state.lastExpression}
+            onComplete={handleComplete}
+            onCancel={handleCancel}
+          />
+        ) : (
+          <DemoPaymentModal
+            modelId={modelId}
+            modelName={theme.label}
+            expression={state.lastExpression}
+            onComplete={handleComplete}
+            onCancel={handleCancel}
+          />
+        )
       ) : null}
     </div>
   );
